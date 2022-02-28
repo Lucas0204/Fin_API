@@ -5,6 +5,7 @@ import { IUsersRepository } from "../../../users/repositories/IUsersRepository";
 import { Transfer } from "../../entities/Transfer";
 import { IStatementsRepository } from "../../repositories/IStatementsRepository";
 import { ITransfersRepository } from "../../repositories/ITransfersRepository";
+import { TransferOperationError } from './TransferOperationError';
 
 interface IRequest {
   sender_id: string;
@@ -33,19 +34,19 @@ class TransferOperationUseCase {
     amount
   }: IRequest): Promise<Transfer> {
     if (sender_id === receiver_id) {
-      throw new AppError('It is not possible to make a transfer for yourself!');
+      throw new TransferOperationError.OperationToHimself();
     }
 
     const senderUser = await this.usersRepository.findById(sender_id);
 
     if (!senderUser) {
-      throw new AppError('Sender user does not exist!', 404);
+      throw new TransferOperationError.SenderUserDoesNotExist();
     }
 
     const receiverUser = await this.usersRepository.findById(receiver_id);
 
     if (!receiverUser) {
-      throw new AppError('Sender user does not exist!', 404);
+      throw new TransferOperationError.ReceiverUserDoesNotExist();
     }
 
     const userBalance = await this.statementsRepository.getUserBalance({
@@ -53,7 +54,7 @@ class TransferOperationUseCase {
     });
 
     if (userBalance.balance < amount) {
-      throw new AppError('Insufficient funds!');
+      throw new TransferOperationError.InsufficientFunds();
     }
 
     const transfer = await this.transfersRepository.create({

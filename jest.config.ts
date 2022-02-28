@@ -22,10 +22,9 @@ export default {
       statements: 100
     }
   },
-
   preset: "ts-jest",
   testMatch: ["**/*.spec.ts"],
   collectCoverageFrom: [
     "<rootDir>/src/modules/**/useCases/**/*.ts"
-  ],
+  ]
 };

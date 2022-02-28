@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { container } from "tsyringe";
 
 import { TransferOperationUseCase } from './TransferOperationUseCase';
+import { TransferOperationError } from './TransferOperationError';
 
 class TransferOperationController {
   async execute(request: Request, response: Response): Promise<Response> {
@@ -10,10 +11,8 @@ class TransferOperationController {
 
     const { description, amount } = request.body;
 
-    if (!receiver_id || !description || !amount) {
-      return response.status(400).json({
-        error: 'Necessary data is missing!'
-      });
+    if (!description || !amount) {
+      throw new TransferOperationError.MissingData();
     }
 
     const transferOperationUseCase = container.resolve(TransferOperationUseCase);
