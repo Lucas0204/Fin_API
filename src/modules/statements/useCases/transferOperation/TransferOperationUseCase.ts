@@ -1,6 +1,5 @@
 import { inject, injectable } from "tsyringe";
 
-import { AppError } from "../../../../shared/errors/AppError";
 import { IUsersRepository } from "../../../users/repositories/IUsersRepository";
 import { Transfer } from "../../entities/Transfer";
 import { IStatementsRepository } from "../../repositories/IStatementsRepository";
@@ -12,6 +11,11 @@ interface IRequest {
   receiver_id: string;
   description: string;
   amount: number;
+}
+
+enum OperationType {
+  DEPOSIT = 'deposit',
+  WITHDRAW = 'withdraw'
 }
 
 @injectable()
@@ -62,6 +66,20 @@ class TransferOperationUseCase {
       receiver_id,
       description,
       amount
+    });
+
+    await this.statementsRepository.create({
+      user_id: senderUser.id as string,
+      type: 'withdraw' as OperationType,
+      amount,
+      description: `[TRANSFER] - transference to ${receiverUser.id} - ${description}`
+    });
+
+    await this.statementsRepository.create({
+      user_id: receiverUser.id as string,
+      type: 'deposit' as OperationType,
+      amount,
+      description: `[TRANSFER] - transference from ${senderUser.id} - ${description}`
     });
 
     return transfer;

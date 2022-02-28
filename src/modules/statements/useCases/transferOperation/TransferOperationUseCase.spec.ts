@@ -55,6 +55,8 @@ describe('Transfer operation use case', () => {
       description: 'depositing'
     });
 
+    jest.spyOn(statementsRepositoryInMemory, 'create');
+
     const transfer = await transferOperationUseCase.execute({
       sender_id: userSender.id as string,
       receiver_id: userReceiver.id as string,
@@ -64,6 +66,7 @@ describe('Transfer operation use case', () => {
 
     expect(transfer).toHaveProperty('id');
     expect(transfer.type).toBe('transfer');
+    expect(statementsRepositoryInMemory.create).toHaveBeenCalledTimes(2);
   })
 
   it('should not be able to make a transfer to himself', async () => {

@@ -22,7 +22,9 @@ class InMemoryTransfersRepository implements ITransfersRepository {
       sender_id,
       receiver_id,
       description,
-      amount
+      amount,
+      created_at: new Date(),
+      updated_at: new Date()
     });
 
     this.transfers.push(transfer);
