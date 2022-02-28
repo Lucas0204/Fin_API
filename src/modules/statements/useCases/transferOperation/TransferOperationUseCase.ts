@@ -1,3 +1,5 @@
+import { inject, injectable } from "tsyringe";
+
 import { AppError } from "../../../../shared/errors/AppError";
 import { IUsersRepository } from "../../../users/repositories/IUsersRepository";
 import { Transfer } from "../../entities/Transfer";
@@ -11,10 +13,16 @@ interface IRequest {
   amount: number;
 }
 
+@injectable()
 class TransferOperationUseCase {
   constructor(
+    @inject('TransfersRepository')
     private transfersRepository: ITransfersRepository,
+
+    @inject('UsersRepository')
     private usersRepository: IUsersRepository,
+
+    @inject('StatementsRepository')
     private statementsRepository: IStatementsRepository
   ) {}
 

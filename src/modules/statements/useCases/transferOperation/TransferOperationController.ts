@@ -10,6 +10,12 @@ class TransferOperationController {
 
     const { description, amount } = request.body;
 
+    if (!receiver_id || !description || !amount) {
+      return response.status(400).json({
+        error: 'Necessary data is missing!'
+      });
+    }
+
     const transferOperationUseCase = container.resolve(TransferOperationUseCase);
 
     const transfer = await transferOperationUseCase.execute({
@@ -19,7 +25,7 @@ class TransferOperationController {
       amount
     });
 
-    return response.json(transfer);
+    return response.status(201).json(transfer);
   }
 }
 
